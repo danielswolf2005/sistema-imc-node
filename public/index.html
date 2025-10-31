@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sistema IMC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Sistema IMC</h1>
+    <small class="text-muted">Local - Node.js + SQLite</small>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Cadastrar Pessoa</h5>
+          <form id="formCadastro" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nome</label>
+              <input id="nome" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input id="email" class="form-control" type="email">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Data de Nascimento</label>
+              <input id="data_nasc" class="form-control" type="date">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Sexo</label>
+              <select id="sexo" class="form-select">
+                <option value="">--</option><option>M</option><option>F</option>
+              </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+            </div>
+          </form>
+          <div id="msgCad" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Pessoas Cadastradas</h5>
+          <div class="mb-2">
+            <button id="btnListar" class="btn btn-sm btn-outline-secondary">Atualizar Lista</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm" id="tPessoas">
+              <thead><tr><th>ID</th><th>Nome</th><th>Email</th><th>Ação</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-4 text-center text-muted small">
+    Projeto entregue pelo assistente — ajuste livremente.
+  </footer>
+</div>
+
+<script>
+const apiBase = '/api';
+
+// --- Script de Cadastro (igual ao anterior) ---
+document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nome = document.getElementById('nome').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const data_nasc = document.getElementById('data_nasc').value;
+  const sexo = document.getElementById('sexo').value;
+  if (!nome) return alert('Nome obrigatório');
+  
+  const resp = await fetch(apiBase + '/pessoas', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({nome, email, data_nasc, sexo})
+  });
+  const j = await resp.json();
+  if (resp.ok) {
+    document.getElementById('msgCad').innerHTML = '<div class="alert alert-success py-1">Cadastrado: ' + j.nome + '</div>';
+    listarPessoas();
+    document.getElementById('formCadastro').reset();
+  } else {
+    alert('Erro: ' + (j.error || JSON.stringify(j)));
+  }
+});
+
+// --- Script de Listagem (igual ao anterior) ---
+async function listarPessoas() {
+  const resp = await fetch(apiBase + '/pessoas');
+  const pessoas = await resp.json();
+  const tbody = document.querySelector('#tPessoas tbody');
+  tbody.innerHTML = '';
+  pessoas.forEach(p => {
+    const tr = document.createElement('tr');
+    // Adicionamos o nome da pessoa à chamada da função
+    tr.innerHTML = `<td>${p.id}</td><td>${p.nome}</td><td>${p.email||''}</td>
+      <td><button class="btn btn-sm btn-outline-primary" onclick="selecionarPessoa(${p.id}, '${p.nome}')">Selecionar</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+document.getElementById('btnListar').addEventListener('click', listarPessoas);
+listarPessoas();
+
+// --- FUNÇÃO MODIFICADA ---
+// Agora, esta função redireciona para a nova página
+window.selecionarPessoa = function(id, nome) {
+  // Passamos o ID e o Nome pela URL
+  window.location.href = `calcular.html?id=${id}&nome=${encodeURIComponent(nome)}`;
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

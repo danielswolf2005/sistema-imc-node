@@ -1,0 +1,132 @@
+body {
+  background-color: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
+  min-height: 100vh;
+}
+
+.card-calculator {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  margin: 10px;
+}
+
+.card-calculator a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.card-calculator h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.input-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.input-row label {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.input-row input {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff6600; /* Laranja da foto */
+  border: none;
+  text-align: right;
+  width: 100px;
+  outline: none;
+}
+/* Remove setas do input number */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.btn-calcular {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#resultado {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+
+.imc-valor {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #ff6600; /* Laranja da foto */
+  line-height: 1.1;
+}
+
+.imc-valor span {
+  font-size: 1rem;
+  font-weight: normal;
+  color: #555;
+  display: block;
+}
+
+.imc-categoria {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 4px;
+  margin-bottom: 20px;
+}
+
+/* Cores da Categoria */
+.normal { color: #4CAF50; } /* Verde */
+.subpeso { color: #3498db; } /* Azul */
+.sobrepeso { color: #e74c3c; } /* Vermelho */
+
+
+/* Barra de informação */
+.info-bar {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(to right, 
+    #3498db 0%, #3498db 15%,  /* Subpeso */
+    #4CAF50 15%, #4CAF50 55%, /* Normal */
+    #e74c3c 55%, #e74c3c 100% /* Sobrepeso */
+  );
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.info-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 4px;
+}

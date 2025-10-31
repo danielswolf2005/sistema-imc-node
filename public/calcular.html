@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calcular IMC</title>
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="card-calculator">
+  <a href="index.html">&larr; Voltar para lista</a>
+  <h2>Calculadora de IMC</h2>
+  <h5 class="text-center" style="font-weight: normal; margin-top: -15px; margin-bottom: 20px;">
+    Para: <strong id="pessoaNome">...</strong>
+  </h5>
+
+  <form id="formImc">
+    <div class="input-row">
+      <label for="peso">Peso</label>
+      <input id="peso" type="number" step="0.1" value="60" required>
+    </div>
+    <div class="input-row">
+      <label for="altura">Altura</label>
+      <input id="altura" type="number" step="0.01" value="1.70" required>
+    </div>
+    
+    <button type="submit" class="btn-calcular">Calcular</button>
+  </form>
+
+  <div id="resultado" style="display:none;">
+    <div class="imc-valor">
+      <span id="imcNumero">20,8</span>
+      <span>IMC</span>
+    </div>
+    <div class="imc-categoria normal" id="imcCategoria">
+      Normal
+    </div>
+    
+    <div class="info-bar"></div>
+    <div class="info-labels">
+      <span>16,0</span>
+      <span>18,5</span>
+      <span>25,0</span>
+      <span>40,0</span>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const apiBase = '/api';
+  let pessoaId = null;
+
+  // 1. Ao carregar a página, pegar o ID da pessoa da URL
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    pessoaId = params.get('id');
+    const pessoaNome = params.get('nome');
+
+    if (!pessoaId) {
+      alert('ID da pessoa não encontrado!');
+      window.location.href = 'index.html';
+    }
+    
+    document.getElementById('pessoaNome').innerText = pessoaNome || 'Pessoa';
+  });
+
+  // 2. Ao enviar o formulário (clicar em Calcular)
+  document.getElementById('formImc').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const peso = parseFloat(document.getElementById('peso').value);
+    const altura = parseFloat(document.getElementById('altura').value);
+
+    if (!pessoaId) return alert('Selecione uma pessoa (reinicie a página)');
+    if (!peso || !altura || altura <= 0) return alert('Preencha peso e altura válidos');
+
+    // 3. Chamar a API (a mesma que você já tinha!)
+    const resp = await fetch(apiBase + '/imc', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        pessoa_id: pessoaId,
+        peso_kg: peso,
+        altura_m: altura
+      })
+    });
+    
+    const data = await resp.json();
+
+    if (resp.ok) {
+      // 4. Mostrar os resultados
+      const resDiv = document.getElementById('resultado');
+      resDiv.style.display = 'block';
+
+      // Formata o número para usar vírgula, como na foto
+      document.getElementById('imcNumero').innerText = data.registro.imc.toString().replace('.', ',');
+      
+      const categoriaEl = document.getElementById('imcCategoria');
+      const categoriaNome = data.categoria.nome;
+      categoriaEl.innerText = categoriaNome;
+
+      // Resetar classes de cor e adicionar a correta
+      categoriaEl.className = 'imc-categoria';
+      if (categoriaNome.includes('Abaixo')) {
+        categoriaEl.classList.add('subpeso');
+      } else if (categoriaNome.includes('Normal')) {
+        categoriaEl.classList.add('normal');
+      } else {
+        categoriaEl.classList.add('sobrepeso');
+      }
+
+    } else {
+      alert('Erro: ' + (data.error || JSON.stringify(data)));
+    }
+  });
+</script>
+
+</body>
+</html>
